@@ -1,0 +1,77 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Accounts IQ REST and Soap API"
+  },
+  "paths": {
+    "/soap": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "post": {
+        "summary": "Soap Endpoint",
+        "description": "This endpoint supports our legacy SOAP endpoints.",
+        "x-zuplo-route": {
+          "corsPolicy": "none",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "${env.BASE_URL}"
+            }
+          },
+          "policies": {
+            "inbound": []
+          }
+        },
+        "operationId": "ab2e1367-ee1f-4850-993d-78d74a9b14f6"
+      }
+    },
+    "/v1/invoicesBy": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Invoices By",
+        "description": "Get your invoices by date right here, roll up, roll up.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "The date the report should start, e.g. 2022-01-01",
+            "required": true
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The date the report should end, e.g. 2022-01-02",
+            "required": true
+          }
+        ],
+        "x-zuplo-route": {
+          "corsPolicy": "none",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "${env.BASE_URL}"
+            }
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound",
+              "api-key-to-token",
+              "to-soap"
+            ],
+            "outbound": [
+              "xml-to-json-outbound",
+              "strip-soap"
+            ]
+          }
+        },
+        "operationId": "68d501a4-3ce2-4a00-b2d1-f14e76fa5960"
+      }
+    }
+  }
+}

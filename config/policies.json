@@ -1,0 +1,64 @@
+{
+  "policies": [
+    {
+      "handler": {
+        "export": "XmlToJsonOutboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "attributeNamePrefix": "@_",
+          "ignoreAttributes": true,
+          "ignoreDeclarations": true,
+          "ignoreProcessingInstructions": true,
+          "parseOnStatusCodes": "200-299",
+          "removeNSPrefix": true,
+          "textNodeName": "#text",
+          "trimValues": true
+        }
+      },
+      "name": "xml-to-json-outbound",
+      "policyType": "xml-to-json-outbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/json-to-soap)",
+        "options": {
+          "template": {
+            "module": "$import(./modules/templates)",
+            "export": "invoicesBy"
+          }
+        }
+      },
+      "name": "to-soap",
+      "policyType": "custom-code-inbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/strip-soap-out)"
+      },
+      "name": "strip-soap",
+      "policyType": "custom-code-outbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/api-key-to-token)"
+      },
+      "name": "api-key-to-token",
+      "policyType": "custom-code-inbound"
+    },
+    {
+      "handler": {
+        "export": "ApiKeyInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "allowUnauthenticatedRequests": false,
+          "cacheTtlSeconds": 60
+        }
+      },
+      "name": "api-key-inbound",
+      "policyType": "api-key-inbound"
+    }
+  ]
+}
